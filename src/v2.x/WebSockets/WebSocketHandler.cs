@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNet.SignalR.Client.Infrastructure;
 using Microsoft.AspNet.SignalR.Client.Transports.WebSockets;
+using WebSocketSharp;
 
 namespace Microsoft.AspNet.SignalR.Client.WebSockets
 {
@@ -170,7 +171,7 @@ namespace Microsoft.AspNet.SignalR.Client.WebSockets
             }
 
             try {
-                if (WebSocket.State == WebSocketState.Closed ||
+                if (WebSocket.ReadyState == WebSocketState.Closed ||
                     WebSocket.State == WebSocketState.Aborted) {
                     // No-op if the socket is already closed or aborted
                 } else {

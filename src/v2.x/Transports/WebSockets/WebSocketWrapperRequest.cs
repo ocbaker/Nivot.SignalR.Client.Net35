@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Net;
 using System.Security.Cryptography.X509Certificates;
-using System.Text;
 using Microsoft.AspNet.SignalR.Client.Http;
 
 namespace Microsoft.AspNet.SignalR.Client.Transports.WebSockets

@@ -118,6 +118,7 @@
     <Compile Include="Transports\WebSockets\WebSocketMessageReader.cs" />
     <Compile Include="Transports\WebSockets\WebSocketWrapperRequest.cs" />
     <Compile Include="Transports\WebSocketTransport.cs" />
+    <Compile Include="WebSockets\ClientWebSocket.cs" />
     <Compile Include="WebSockets\DefaultWebSocketHandler.cs" />
     <Compile Include="WebSockets\IWebSocket.cs" />
     <Compile Include="WebSockets\WebSocketHandler.cs" />
