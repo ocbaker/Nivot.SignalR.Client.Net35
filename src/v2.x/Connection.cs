@@ -18,7 +18,7 @@ using Microsoft.AspNet.SignalR.Client.Transports;
 using Microsoft.AspNet.SignalR.Infrastructure;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-#if (NET4 || NET45)
+#if (NET35 || NET4 || NET45)
 using System.Security.Cryptography.X509Certificates;
 #endif
 
@@ -72,8 +72,11 @@ namespace Microsoft.AspNet.SignalR.Client
 
         //The json serializer for the connections
         private JsonSerializer _jsonSerializer = new JsonSerializer();
+        DateTime _lastMessageAt;
+        DateTime _lastActiveAt;
+        TimeSpan _reconnectWindow;
 
-#if (NET4 || NET45)
+#if (NET35 || NET4 || NET45)
         private readonly X509CertificateCollection _certCollection = new X509CertificateCollection();
 #endif
 
@@ -156,6 +159,9 @@ namespace Microsoft.AspNet.SignalR.Client
             Url = url;
             QueryString = queryString;
             _disconnectTimeoutOperation = DisposableAction.Empty;
+            _lastMessageAt = DateTime.UtcNow;
+            _lastActiveAt = DateTime.UtcNow;
+            _reconnectWindow = TimeSpan.Zero;
             _connectingMessageBuffer = new ConnectingMessageBuffer(this, OnMessageReceived);
             Items = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
             State = ConnectionState.Disconnected;
@@ -191,7 +197,7 @@ namespace Microsoft.AspNet.SignalR.Client
             }
         }
 
-#if NET4 || NET45
+#if NET35 || NET4 || NET45
         X509CertificateCollection IConnection.Certificates
         {
             get
@@ -256,6 +262,9 @@ namespace Microsoft.AspNet.SignalR.Client
         public IDictionary<string, string> Headers { get; private set; }
 
 #if !PORTABLE
+        public DateTime LastActiveAt {
+            get { return _lastActiveAt; }
+        }
         /// <summary>
         /// Gets of sets proxy information for the connection.
         /// </summary>
@@ -303,6 +312,9 @@ namespace Microsoft.AspNet.SignalR.Client
             {
                 return _transport;
             }
+        }
+        public DateTime LastMessageAt {
+            get { return _lastMessageAt; }
         }
 
         /// <summary>
@@ -612,7 +624,7 @@ namespace Microsoft.AspNet.SignalR.Client
             return Send(this.JsonSerializeObject(value));
         }
 
-#if (NET4 || NET45)
+#if (NET35 || NET4 || NET45)
         /// <summary>
         /// Adds a client certificate to the request
         /// </summary>
