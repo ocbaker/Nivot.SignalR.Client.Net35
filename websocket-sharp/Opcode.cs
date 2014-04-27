@@ -37,7 +37,7 @@ namespace WebSocketSharp
   /// The values of the opcode are defined in
   /// <see href="http://tools.ietf.org/html/rfc6455#section-5.2">Section 5.2</see> of RFC 6455.
   /// </remarks>
-  public enum WebSocketMessageType : byte
+  public enum Opcode : byte
   {
     /// <summary>
     /// Equivalent to numeric value 0.

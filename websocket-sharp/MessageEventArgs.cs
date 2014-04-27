@@ -45,28 +45,28 @@ namespace WebSocketSharp
     #region Private Fields
 
     private string _data;
-    private WebSocketMessageType _webSocketMessageType;
+    private Opcode _opcode;
     private byte[] _rawData;
 
     #endregion
 
     #region Internal Constructors
 
-    internal MessageEventArgs (WebSocketMessageType webSocketMessageType, byte[] data)
+    internal MessageEventArgs (Opcode opcode, byte[] data)
     {
       if ((ulong) data.LongLength > PayloadData.MaxLength)
         throw new WebSocketException (CloseStatusCode.TooBig);
 
-      _webSocketMessageType = webSocketMessageType;
+      _opcode = opcode;
       _rawData = data;
-      _data = convertToString (webSocketMessageType, data);
+      _data = convertToString (opcode, data);
     }
 
-    internal MessageEventArgs (WebSocketMessageType webSocketMessageType, PayloadData payload)
+    internal MessageEventArgs (Opcode opcode, PayloadData payload)
     {
-      _webSocketMessageType = webSocketMessageType;
+      _opcode = opcode;
       _rawData = payload.ApplicationData;
-      _data = convertToString (webSocketMessageType, _rawData);
+      _data = convertToString (opcode, _rawData);
     }
 
     #endregion
@@ -101,11 +101,11 @@ namespace WebSocketSharp
     /// Gets the type of the received data.
     /// </summary>
     /// <value>
-    /// One of the <see cref="WebSocketMessageType"/> values, indicates the type of the received data.
+    /// One of the <see cref="Opcode"/> values, indicates the type of the received data.
     /// </value>
-    public WebSocketMessageType Type {
+    public Opcode Type {
       get {
-        return _webSocketMessageType;
+        return _opcode;
       }
     }
 
@@ -113,13 +113,13 @@ namespace WebSocketSharp
 
     #region Private Methods
 
-    private static string convertToString (WebSocketMessageType webSocketMessageType, byte [] data)
+    private static string convertToString (Opcode opcode, byte [] data)
     {
       return data.LongLength == 0
              ? String.Empty
-             : webSocketMessageType == WebSocketMessageType.Text
+             : opcode == Opcode.Text
                ? Encoding.UTF8.GetString (data)
-               : webSocketMessageType.ToString ();
+               : opcode.ToString ();
     }
 
     #endregion

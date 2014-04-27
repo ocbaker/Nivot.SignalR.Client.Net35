@@ -502,8 +502,8 @@ namespace WebSocketSharp
     {
       var args = frame.IsCompressed
                  ? new MessageEventArgs (
-                     frame.WebSocketMessageType, frame.PayloadData.ApplicationData.Decompress (_compression))
-                 : new MessageEventArgs (frame.WebSocketMessageType, frame.PayloadData);
+                     frame.Opcode, frame.PayloadData.ApplicationData.Decompress (_compression))
+                 : new MessageEventArgs (frame.Opcode, frame.PayloadData);
 
       if (_readyState == WebSocketState.Open)
         OnMessage.Emit (this, args);
@@ -557,7 +557,7 @@ namespace WebSocketSharp
         }
 
         if (_readyState == WebSocketState.Open)
-          OnMessage.Emit (this, new MessageEventArgs (first.WebSocketMessageType, data));
+          OnMessage.Emit (this, new MessageEventArgs (first.Opcode, data));
 
         return true;
       }
@@ -1071,7 +1071,7 @@ namespace WebSocketSharp
       }
     }
 
-    private bool send (WebSocketMessageType webSocketMessageType, byte [] data)
+    private bool send (Opcode opcode, byte [] data)
     {
       lock (_forSend) {
         var sent = false;
@@ -1083,7 +1083,7 @@ namespace WebSocketSharp
           }
 
           var mask = _client ? Mask.Mask : Mask.Unmask;
-          sent = send (WsFrame.CreateFrame (Fin.Final, webSocketMessageType, mask, data, compressed));
+          sent = send (WsFrame.CreateFrame (Fin.Final, opcode, mask, data, compressed));
         }
         catch (Exception ex) {
           _logger.Fatal (ex.ToString ());
@@ -1094,7 +1094,7 @@ namespace WebSocketSharp
       }
     }
 
-    private bool send (WebSocketMessageType webSocketMessageType, Stream stream)
+    private bool send (Opcode opcode, Stream stream)
     {
       lock (_forSend) {
         var sent = false;
@@ -1107,7 +1107,7 @@ namespace WebSocketSharp
           }
 
           var mask = _client ? Mask.Mask : Mask.Unmask;
-          sent = sendFragmented (webSocketMessageType, stream, mask, compressed);
+          sent = sendFragmented (opcode, stream, mask, compressed);
         }
         catch (Exception ex) {
           _logger.Fatal (ex.ToString ());
@@ -1124,11 +1124,11 @@ namespace WebSocketSharp
       }
     }
 
-    private void sendAsync (WebSocketMessageType webSocketMessageType, byte [] data, Action<bool> completed)
+    private void sendAsync (Opcode opcode, byte [] data, Action<bool> completed)
     {
-      Func<WebSocketMessageType, byte [], bool> sender = send;
+      Func<Opcode, byte [], bool> sender = send;
       sender.BeginInvoke (
-        webSocketMessageType,
+        opcode,
         data,
         ar => {
           try {
@@ -1144,11 +1144,11 @@ namespace WebSocketSharp
         null);
     }
 
-    private void sendAsync (WebSocketMessageType webSocketMessageType, Stream stream, Action<bool> completed)
+    private void sendAsync (Opcode opcode, Stream stream, Action<bool> completed)
     {
-      Func<WebSocketMessageType, Stream, bool> sender = send;
+      Func<Opcode, Stream, bool> sender = send;
       sender.BeginInvoke (
-        webSocketMessageType,
+        opcode,
         stream,
         ar => {
           try {
@@ -1164,7 +1164,7 @@ namespace WebSocketSharp
         null);
     }
 
-    private bool sendFragmented (WebSocketMessageType webSocketMessageType, Stream stream, Mask mask, bool compressed)
+    private bool sendFragmented (Opcode opcode, Stream stream, Mask mask, bool compressed)
     {
       var len = stream.Length;
       var quo = len / FragmentLength;
@@ -1177,20 +1177,20 @@ namespace WebSocketSharp
       if (quo == 0) {
         buffer = new byte [rem];
         return stream.Read (buffer, 0, rem) == rem &&
-               send (WsFrame.CreateFrame (Fin.Final, webSocketMessageType, mask, buffer, compressed));
+               send (WsFrame.CreateFrame (Fin.Final, opcode, mask, buffer, compressed));
       }
 
       buffer = new byte [FragmentLength];
 
       // First
       if (stream.Read (buffer, 0, FragmentLength) != FragmentLength ||
-          !send (WsFrame.CreateFrame (Fin.More, webSocketMessageType, mask, buffer, compressed)))
+          !send (WsFrame.CreateFrame (Fin.More, opcode, mask, buffer, compressed)))
         return false;
 
       // Mid
       for (long i = 0; i < times; i++) {
         if (stream.Read (buffer, 0, FragmentLength) != FragmentLength ||
-            !send (WsFrame.CreateFrame (Fin.More, WebSocketMessageType.Cont, mask, buffer, compressed)))
+            !send (WsFrame.CreateFrame (Fin.More, Opcode.Cont, mask, buffer, compressed)))
           return false;
       }
 
@@ -1200,7 +1200,7 @@ namespace WebSocketSharp
         buffer = new byte [tmpLen = rem];
 
       return stream.Read (buffer, 0, tmpLen) == tmpLen &&
-             send (WsFrame.CreateFrame (Fin.Final, WebSocketMessageType.Cont, mask, buffer, compressed));
+             send (WsFrame.CreateFrame (Fin.Final, Opcode.Cont, mask, buffer, compressed));
     }
 
     // As client
@@ -1428,7 +1428,7 @@ namespace WebSocketSharp
     }
 
     // As server, used to broadcast
-    internal void Send (WebSocketMessageType webSocketMessageType, byte [] data, Dictionary<CompressionMethod, byte []> cache)
+    internal void Send (Opcode opcode, byte [] data, Dictionary<CompressionMethod, byte []> cache)
     {
       lock (_forSend) {
         lock (_forConn) {
@@ -1440,7 +1440,7 @@ namespace WebSocketSharp
             if (!cache.TryGetValue (_compression, out cached)) {
               cached = WsFrame.CreateFrame (
                 Fin.Final,
-                webSocketMessageType,
+                opcode,
                 Mask.Unmask,
                 data.Compress (_compression),
                 _compression != CompressionMethod.None)
@@ -1460,7 +1460,7 @@ namespace WebSocketSharp
     }
 
     // As server, used to broadcast
-    internal void Send (WebSocketMessageType webSocketMessageType, Stream stream, Dictionary <CompressionMethod, Stream> cache)
+    internal void Send (Opcode opcode, Stream stream, Dictionary <CompressionMethod, Stream> cache)
     {
       lock (_forSend) {
         try {
@@ -1473,7 +1473,7 @@ namespace WebSocketSharp
             cached.Position = 0;
 
           if (_readyState == WebSocketState.Open)
-            sendFragmented (webSocketMessageType, cached, Mask.Unmask, _compression != CompressionMethod.None);
+            sendFragmented (opcode, cached, Mask.Unmask, _compression != CompressionMethod.None);
         }
         catch (Exception ex) {
           _logger.Fatal (ex.ToString ());
@@ -1834,10 +1834,10 @@ namespace WebSocketSharp
       var len = data.LongLength;
       if (len <= FragmentLength)
         send (
-          WebSocketMessageType.Binary,
+          Opcode.Binary,
           len > 0 && _client && _compression == CompressionMethod.None ? data.Copy (len) : data);
       else
-        send (WebSocketMessageType.Binary, new MemoryStream (data));
+        send (Opcode.Binary, new MemoryStream (data));
     }
 
     /// <summary>
@@ -1857,7 +1857,7 @@ namespace WebSocketSharp
         return;
       }
 
-      send (WebSocketMessageType.Binary, file.OpenRead ());
+      send (Opcode.Binary, file.OpenRead ());
     }
 
     /// <summary>
@@ -1878,9 +1878,9 @@ namespace WebSocketSharp
 
       var rawData = Encoding.UTF8.GetBytes (data);
       if (rawData.LongLength <= FragmentLength)
-        send (WebSocketMessageType.Text, rawData);
+        send (Opcode.Text, rawData);
       else
-        send (WebSocketMessageType.Text, new MemoryStream (rawData));
+        send (Opcode.Text, new MemoryStream (rawData));
     }
 
     /// <summary>
@@ -1910,11 +1910,11 @@ namespace WebSocketSharp
       var len = data.LongLength;
       if (len <= FragmentLength)
         sendAsync (
-          WebSocketMessageType.Binary,
+          Opcode.Binary,
           len > 0 && _client && _compression == CompressionMethod.None ? data.Copy (len) : data,
           completed);
       else
-        sendAsync (WebSocketMessageType.Binary, new MemoryStream (data), completed);
+        sendAsync (Opcode.Binary, new MemoryStream (data), completed);
     }
 
     /// <summary>
@@ -1942,7 +1942,7 @@ namespace WebSocketSharp
         return;
       }
 
-      sendAsync (WebSocketMessageType.Binary, file.OpenRead (), completed);
+      sendAsync (Opcode.Binary, file.OpenRead (), completed);
     }
 
     /// <summary>
@@ -1971,9 +1971,9 @@ namespace WebSocketSharp
 
       var rawData = Encoding.UTF8.GetBytes (data);
       if (rawData.LongLength <= FragmentLength)
-        sendAsync (WebSocketMessageType.Text, rawData, completed);
+        sendAsync (Opcode.Text, rawData, completed);
       else
-        sendAsync (WebSocketMessageType.Text, new MemoryStream (rawData), completed);
+        sendAsync (Opcode.Text, new MemoryStream (rawData), completed);
     }
 
     /// <summary>
@@ -2027,8 +2027,8 @@ namespace WebSocketSharp
                 len));
 
           var sent = len <= FragmentLength
-                     ? send (WebSocketMessageType.Binary, data)
-                     : send (WebSocketMessageType.Binary, new MemoryStream (data));
+                     ? send (Opcode.Binary, data)
+                     : send (Opcode.Binary, new MemoryStream (data));
 
           if (completed != null)
             completed (sent);
