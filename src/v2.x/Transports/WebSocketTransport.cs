@@ -4,7 +4,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNet.SignalR.Client.Http;
 using Microsoft.AspNet.SignalR.Client.Infrastructure;
+using Microsoft.AspNet.SignalR.Client.Transports.WebSockets;
 using Microsoft.AspNet.SignalR.Client.WebSockets;
+using WebSocketSharp;
+using WebSocketHandler = Microsoft.AspNet.SignalR.Client.WebSockets.WebSocketHandler;
 
 namespace Microsoft.AspNet.SignalR.Client.Transports
 {
@@ -102,14 +105,14 @@ namespace Microsoft.AspNet.SignalR.Client.Transports
 
             // TODO: Revisit thread safety of this assignment
             _webSocketTokenSource = new CancellationTokenSource();
-            _webSocket = new ClientWebSocket();
-
-            _connectionInfo.Connection.PrepareRequest(new WebSocketWrapperRequest(_webSocket, _connectionInfo.Connection));
 
             CancellationTokenSource linkedCts = CancellationTokenSource.CreateLinkedTokenSource(_webSocketTokenSource.Token, _disconnectToken);
             CancellationToken token = linkedCts.Token;
 
-            await _webSocket.ConnectAsync(builder.Uri, token);
+            _webSocket = new ClientWebSocket(builder.Uri.ToString(), token, "");
+            _connectionInfo.Connection.PrepareRequest(new WebSocketWrapperRequest(_webSocket, _connectionInfo.Connection));
+
+            _webSocket.ConnectAsync();
             await ProcessWebSocketRequestAsync(_webSocket, token);
         }
 
@@ -123,7 +126,7 @@ namespace Microsoft.AspNet.SignalR.Client.Transports
             }
 
             // If we don't throw here when the WebSocket isn't open, WebSocketHander.SendAsync will noop.
-            if (WebSocket.State != WebSocketState.Open) {
+            if (WebSocket.ReadyState != WebSocketState.Open) {
                 // Make this a faulted task and trigger the OnError even to maintain consistency with the HttpBasedTransports
                 var ex = new InvalidOperationException(Resources.Error_DataCannotBeSentDuringWebSocketReconnect);
                 connection.OnError(ex);

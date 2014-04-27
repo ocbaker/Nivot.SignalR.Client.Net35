@@ -8,6 +8,15 @@ using WebSocketSharp;
 
 namespace Microsoft.AspNet.SignalR.Client.WebSockets
 {
+    public class ClientWebSocket : WebSocket
+    {
+        CancellationToken _cancellationToken;
+
+        public ClientWebSocket(string url, CancellationToken token, params string[] protocols) : base(url, protocols) {
+            _cancellationToken = token;
+        }
+    }
+
     //public interface IClientWebSocket
     //{
 
