@@ -27,9 +27,75 @@
 #endregion
 
 using System;
+using System.Reflection.Emit;
 
 namespace WebSocketSharp
 {
+
+    // Summary:
+    //     Indicates the message type.
+    public enum WebSocketMessageType
+    {
+        // Summary:
+        //     The message is clear text.
+        Text = 0,
+        //
+        // Summary:
+        //     The message is in binary format.
+        Binary = 1,
+        //
+        // Summary:
+        //     A receive has completed because a close message was received.
+        Close = 2,
+
+        Ping = 3,
+
+        Pong = 4,
+
+        Cont = 5
+    }
+
+    public static class OpCodeExtensions
+    {
+        public static Opcode GetOpCode(this WebSocketMessageType webSocketMessageType) {
+            switch (webSocketMessageType) {
+                case WebSocketMessageType.Text:
+                    return Opcode.Text;
+                case WebSocketMessageType.Binary:
+                    return Opcode.Binary;
+                case WebSocketMessageType.Close:
+                    return Opcode.Close;
+                case WebSocketMessageType.Ping:
+                    return Opcode.Ping;
+                case WebSocketMessageType.Pong:
+                    return Opcode.Pong;
+                case WebSocketMessageType.Cont:
+                    return Opcode.Cont;
+                default:
+                    throw new ArgumentOutOfRangeException("webSocketMessageType");
+            }
+        }
+
+        public static WebSocketMessageType GetWSMessageType(this Opcode opcode) {
+            switch (opcode) {
+            case Opcode.Cont:
+                return WebSocketMessageType.Cont;
+            case Opcode.Text:
+                return WebSocketMessageType.Text;
+            case Opcode.Binary:
+                return WebSocketMessageType.Binary;
+            case Opcode.Close:
+                return WebSocketMessageType.Close;
+            case Opcode.Ping:
+                return WebSocketMessageType.Ping;
+            case Opcode.Pong:
+                return WebSocketMessageType.Pong;
+            default:
+                throw new ArgumentOutOfRangeException("opcode");
+            }
+        }
+    }
+
   /// <summary>
   /// Contains the values of the opcode that indicates the type of a WebSocket frame.
   /// </summary>
