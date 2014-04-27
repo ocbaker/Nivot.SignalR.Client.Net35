@@ -6,6 +6,7 @@ using System.Collections.Specialized;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Net;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Microsoft.AspNet.SignalR.Client.Http;
 using Microsoft.AspNet.SignalR.Client.Transports;
@@ -39,7 +40,7 @@ namespace Microsoft.AspNet.SignalR.Client
         IWebProxy Proxy { get; set; }
 #endif
 
-#if (NET4 || NET45)
+#if (NET35 ||  NET4 || NET45)
         X509CertificateCollection Certificates { get; }
 #endif
 

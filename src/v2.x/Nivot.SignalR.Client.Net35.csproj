@@ -44,6 +44,10 @@
     <Reference Include="System.Threading">
       <HintPath>..\packages\TaskParallelLibrary.1.0.2856.0\lib\Net35\System.Threading.dll</HintPath>
     </Reference>
+    <Reference Include="websocket-sharp">
+      <HintPath>..\packages\WebSocketSharp.1.0.3-rc3\lib\websocket-sharp.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Connection.cs" />
@@ -80,6 +84,7 @@
     <Compile Include="Infrastructure\MonoUtility.cs" />
     <Compile Include="Infrastructure\SignalRError.cs" />
     <Compile Include="Infrastructure\TaskAsyncHelper.cs" />
+    <Compile Include="Infrastructure\TaskQueue.cs" />
     <Compile Include="Infrastructure\TransportAbortHandler.cs" />
     <Compile Include="Infrastructure\TransportInitializationHandler.cs" />
     <Compile Include="Infrastructure\UrlEncoder.cs" />
@@ -112,6 +117,14 @@
     <Compile Include="Transports\ServerSentEvents\EventType.cs" />
     <Compile Include="Transports\ServerSentEvents\SseEvent.cs" />
     <Compile Include="Transports\TransportHelper.cs" />
+    <Compile Include="Transports\WebSockets\WebSocketHandler.cs" />
+    <Compile Include="Transports\WebSockets\WebSocketMessage.cs" />
+    <Compile Include="Transports\WebSockets\WebSocketMessageReader.cs" />
+    <Compile Include="Transports\WebSockets\WebSocketWrapperRequest.cs" />
+    <Compile Include="Transports\WebSocketTransport.cs" />
+    <Compile Include="WebSockets\DefaultWebSocketHandler.cs" />
+    <Compile Include="WebSockets\IWebSocket.cs" />
+    <Compile Include="WebSockets\WebSocketHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources.resx">
