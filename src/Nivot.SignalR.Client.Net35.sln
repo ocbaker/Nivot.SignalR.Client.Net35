@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.21005.1
+VisualStudioVersion = 12.0.30324.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nivot.SignalR.Client.Net35", "v1.x\Nivot.SignalR.Client.Net35.csproj", "{C52C9116-C374-45D6-AD4C-048D5F35825D}"
 EndProject
@@ -26,20 +26,42 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "v2.x", "v2.x", "{43B34E9D-6
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nivot.SignalR.Client.Net35", "v2.x\Nivot.SignalR.Client.Net35.csproj", "{EB46B9C6-EE37-48F9-835E-E49580E40E0A}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "libraries", "libraries", "{935485B5-C6C0-4807-B34F-87FE60A026B1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "websocket-sharp", "..\websocket-sharp\websocket-sharp.csproj", "{B357BAC7-529E-4D81-A0D2-71041B19C8DE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug_Ubuntu|Any CPU = Debug_Ubuntu|Any CPU
 		Debug|Any CPU = Debug|Any CPU
+		Release_Ubuntu|Any CPU = Release_Ubuntu|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C52C9116-C374-45D6-AD4C-048D5F35825D}.Debug_Ubuntu|Any CPU.ActiveCfg = Debug|Any CPU
+		{C52C9116-C374-45D6-AD4C-048D5F35825D}.Debug_Ubuntu|Any CPU.Build.0 = Debug|Any CPU
 		{C52C9116-C374-45D6-AD4C-048D5F35825D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C52C9116-C374-45D6-AD4C-048D5F35825D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C52C9116-C374-45D6-AD4C-048D5F35825D}.Release_Ubuntu|Any CPU.ActiveCfg = Release|Any CPU
+		{C52C9116-C374-45D6-AD4C-048D5F35825D}.Release_Ubuntu|Any CPU.Build.0 = Release|Any CPU
 		{C52C9116-C374-45D6-AD4C-048D5F35825D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C52C9116-C374-45D6-AD4C-048D5F35825D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EB46B9C6-EE37-48F9-835E-E49580E40E0A}.Debug_Ubuntu|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB46B9C6-EE37-48F9-835E-E49580E40E0A}.Debug_Ubuntu|Any CPU.Build.0 = Debug|Any CPU
 		{EB46B9C6-EE37-48F9-835E-E49580E40E0A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EB46B9C6-EE37-48F9-835E-E49580E40E0A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB46B9C6-EE37-48F9-835E-E49580E40E0A}.Release_Ubuntu|Any CPU.ActiveCfg = Release|Any CPU
+		{EB46B9C6-EE37-48F9-835E-E49580E40E0A}.Release_Ubuntu|Any CPU.Build.0 = Release|Any CPU
 		{EB46B9C6-EE37-48F9-835E-E49580E40E0A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EB46B9C6-EE37-48F9-835E-E49580E40E0A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B357BAC7-529E-4D81-A0D2-71041B19C8DE}.Debug_Ubuntu|Any CPU.ActiveCfg = Debug_Ubuntu|Any CPU
+		{B357BAC7-529E-4D81-A0D2-71041B19C8DE}.Debug_Ubuntu|Any CPU.Build.0 = Debug_Ubuntu|Any CPU
+		{B357BAC7-529E-4D81-A0D2-71041B19C8DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B357BAC7-529E-4D81-A0D2-71041B19C8DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B357BAC7-529E-4D81-A0D2-71041B19C8DE}.Release_Ubuntu|Any CPU.ActiveCfg = Release_Ubuntu|Any CPU
+		{B357BAC7-529E-4D81-A0D2-71041B19C8DE}.Release_Ubuntu|Any CPU.Build.0 = Release_Ubuntu|Any CPU
+		{B357BAC7-529E-4D81-A0D2-71041B19C8DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B357BAC7-529E-4D81-A0D2-71041B19C8DE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -47,5 +69,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{C52C9116-C374-45D6-AD4C-048D5F35825D} = {2F5BF692-78C1-4961-9E42-3724C6F9CD3B}
 		{EB46B9C6-EE37-48F9-835E-E49580E40E0A} = {43B34E9D-6244-4F49-815D-9CF7719C2C40}
+		{B357BAC7-529E-4D81-A0D2-71041B19C8DE} = {935485B5-C6C0-4807-B34F-87FE60A026B1}
 	EndGlobalSection
 EndGlobal
