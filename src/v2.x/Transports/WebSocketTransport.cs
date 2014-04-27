@@ -188,7 +188,7 @@ namespace Microsoft.AspNet.SignalR.Client.Transports
 
                     _connectionInfo.Connection.OnError(ex);
                 }
-                await Task.Delay(ReconnectDelay);
+                await Task.Factory.StartNew(() => System.Threading.Thread.Sleep(ReconnectDelay));
             }
         }
 
@@ -223,7 +223,7 @@ namespace Microsoft.AspNet.SignalR.Client.Transports
                 _abortHandler.Dispose();
 
                 if (_webSocket != null) {
-                    _webSocket.Dispose();
+                    ((IDisposable)_webSocket).Dispose();
                 }
 
                 if (_webSocketTokenSource != null) {
