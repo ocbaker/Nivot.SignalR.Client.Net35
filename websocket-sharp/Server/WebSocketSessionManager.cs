@@ -226,11 +226,11 @@ namespace WebSocketSharp.Server
 
     #region Private Methods
 
-    private void broadcast (Opcode opcode, byte [] data, Action completed)
+    private void broadcast (WebSocketMessageType webSocketMessageType, byte [] data, Action completed)
     {
       var cache = new Dictionary<CompressionMethod, byte []> ();
       try {
-        Broadcast (opcode, data, cache);
+        Broadcast (webSocketMessageType, data, cache);
         if (completed != null)
           completed ();
       }
@@ -242,11 +242,11 @@ namespace WebSocketSharp.Server
       }
     }
 
-    private void broadcast (Opcode opcode, Stream stream, Action completed)
+    private void broadcast (WebSocketMessageType webSocketMessageType, Stream stream, Action completed)
     {
       var cache = new Dictionary <CompressionMethod, Stream> ();
       try {
-        Broadcast (opcode, stream, cache);
+        Broadcast (webSocketMessageType, stream, cache);
         if (completed != null)
           completed ();
       }
@@ -261,16 +261,16 @@ namespace WebSocketSharp.Server
       }
     }
 
-    private void broadcastAsync (Opcode opcode, byte [] data, Action completed)
+    private void broadcastAsync (WebSocketMessageType webSocketMessageType, byte [] data, Action completed)
     {
       ThreadPool.QueueUserWorkItem (
-        state => broadcast (opcode, data, completed));
+        state => broadcast (webSocketMessageType, data, completed));
     }
 
-    private void broadcastAsync (Opcode opcode, Stream stream, Action completed)
+    private void broadcastAsync (WebSocketMessageType webSocketMessageType, Stream stream, Action completed)
     {
       ThreadPool.QueueUserWorkItem (
-        state => broadcast (opcode, stream, completed));
+        state => broadcast (webSocketMessageType, stream, completed));
     }
 
     private static string createID ()
@@ -315,24 +315,24 @@ namespace WebSocketSharp.Server
     }
 
     internal void Broadcast (
-      Opcode opcode, byte [] data, Dictionary<CompressionMethod, byte []> cache)
+      WebSocketMessageType webSocketMessageType, byte [] data, Dictionary<CompressionMethod, byte []> cache)
     {
       foreach (var session in Sessions) {
         if (_state != ServerState.Start)
           break;
 
-        session.Context.WebSocket.Send (opcode, data, cache);
+        session.Context.WebSocket.Send (webSocketMessageType, data, cache);
       }
     }
 
     internal void Broadcast (
-      Opcode opcode, Stream stream, Dictionary <CompressionMethod, Stream> cache)
+      WebSocketMessageType webSocketMessageType, Stream stream, Dictionary <CompressionMethod, Stream> cache)
     {
       foreach (var session in Sessions) {
         if (_state != ServerState.Start)
           break;
 
-        session.Context.WebSocket.Send (opcode, stream, cache);
+        session.Context.WebSocket.Send (webSocketMessageType, stream, cache);
       }
     }
 
@@ -406,9 +406,9 @@ namespace WebSocketSharp.Server
       }
 
       if (data.LongLength <= WebSocket.FragmentLength)
-        broadcast (Opcode.Binary, data, null);
+        broadcast (WebSocketMessageType.Binary, data, null);
       else
-        broadcast (Opcode.Binary, new MemoryStream (data), null);
+        broadcast (WebSocketMessageType.Binary, new MemoryStream (data), null);
     }
 
     /// <summary>
@@ -427,9 +427,9 @@ namespace WebSocketSharp.Server
 
       var rawData = Encoding.UTF8.GetBytes (data);
       if (rawData.LongLength <= WebSocket.FragmentLength)
-        broadcast (Opcode.Text, rawData, null);
+        broadcast (WebSocketMessageType.Text, rawData, null);
       else
-        broadcast (Opcode.Text, new MemoryStream (rawData), null);
+        broadcast (WebSocketMessageType.Text, new MemoryStream (rawData), null);
     }
 
     /// <summary>
@@ -455,9 +455,9 @@ namespace WebSocketSharp.Server
       }
 
       if (data.LongLength <= WebSocket.FragmentLength)
-        broadcastAsync (Opcode.Binary, data, completed);
+        broadcastAsync (WebSocketMessageType.Binary, data, completed);
       else
-        broadcastAsync (Opcode.Binary, new MemoryStream (data), completed);
+        broadcastAsync (WebSocketMessageType.Binary, new MemoryStream (data), completed);
     }
 
     /// <summary>
@@ -484,9 +484,9 @@ namespace WebSocketSharp.Server
 
       var rawData = Encoding.UTF8.GetBytes (data);
       if (rawData.LongLength <= WebSocket.FragmentLength)
-        broadcastAsync (Opcode.Text, rawData, completed);
+        broadcastAsync (WebSocketMessageType.Text, rawData, completed);
       else
-        broadcastAsync (Opcode.Text, new MemoryStream (rawData), completed);
+        broadcastAsync (WebSocketMessageType.Text, new MemoryStream (rawData), completed);
     }
 
     /// <summary>
@@ -534,9 +534,9 @@ namespace WebSocketSharp.Server
                 len));
 
           if (len <= WebSocket.FragmentLength)
-            broadcast (Opcode.Binary, data, completed);
+            broadcast (WebSocketMessageType.Binary, data, completed);
           else
-            broadcast (Opcode.Binary, new MemoryStream (data), completed);
+            broadcast (WebSocketMessageType.Binary, new MemoryStream (data), completed);
         },
         ex => _logger.Fatal (ex.ToString ()));
     }

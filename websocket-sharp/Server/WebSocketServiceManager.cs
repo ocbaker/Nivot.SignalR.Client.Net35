@@ -184,7 +184,7 @@ namespace WebSocketSharp.Server
 
     #region Private Methods
 
-    private void broadcast (Opcode opcode, byte [] data, Action completed)
+    private void broadcast (WebSocketMessageType webSocketMessageType, byte [] data, Action completed)
     {
       var cache = new Dictionary<CompressionMethod, byte []> ();
       try {
@@ -192,7 +192,7 @@ namespace WebSocketSharp.Server
           if (_state != ServerState.Start)
             break;
 
-          host.Sessions.Broadcast (opcode, data, cache);
+          host.Sessions.Broadcast (webSocketMessageType, data, cache);
         }
 
         if (completed != null)
@@ -206,7 +206,7 @@ namespace WebSocketSharp.Server
       }
     }
 
-    private void broadcast (Opcode opcode, Stream stream, Action completed)
+    private void broadcast (WebSocketMessageType webSocketMessageType, Stream stream, Action completed)
     {
       var cache = new Dictionary<CompressionMethod, Stream> ();
       try {
@@ -214,7 +214,7 @@ namespace WebSocketSharp.Server
           if (_state != ServerState.Start)
             break;
 
-          host.Sessions.Broadcast (opcode, stream, cache);
+          host.Sessions.Broadcast (webSocketMessageType, stream, cache);
         }
 
         if (completed != null)
@@ -231,16 +231,16 @@ namespace WebSocketSharp.Server
       }
     }
 
-    private void broadcastAsync (Opcode opcode, byte [] data, Action completed)
+    private void broadcastAsync (WebSocketMessageType webSocketMessageType, byte [] data, Action completed)
     {
       ThreadPool.QueueUserWorkItem (
-        state => broadcast (opcode, data, completed));
+        state => broadcast (webSocketMessageType, data, completed));
     }
 
-    private void broadcastAsync (Opcode opcode, Stream stream, Action completed)
+    private void broadcastAsync (WebSocketMessageType webSocketMessageType, Stream stream, Action completed)
     {
       ThreadPool.QueueUserWorkItem (
-        state => broadcast (opcode, stream, completed));
+        state => broadcast (webSocketMessageType, stream, completed));
     }
 
     private Dictionary<string, Dictionary<string, bool>> broadping (
@@ -364,9 +364,9 @@ namespace WebSocketSharp.Server
       }
 
       if (data.LongLength <= WebSocket.FragmentLength)
-        broadcast (Opcode.Binary, data, null);
+        broadcast (WebSocketMessageType.Binary, data, null);
       else
-        broadcast (Opcode.Binary, new MemoryStream (data), null);
+        broadcast (WebSocketMessageType.Binary, new MemoryStream (data), null);
     }
 
     /// <summary>
@@ -386,9 +386,9 @@ namespace WebSocketSharp.Server
 
       var rawData = Encoding.UTF8.GetBytes (data);
       if (rawData.LongLength <= WebSocket.FragmentLength)
-        broadcast (Opcode.Text, rawData, null);
+        broadcast (WebSocketMessageType.Text, rawData, null);
       else
-        broadcast (Opcode.Text, new MemoryStream (rawData), null);
+        broadcast (WebSocketMessageType.Text, new MemoryStream (rawData), null);
     }
 
     /// <summary>
@@ -414,9 +414,9 @@ namespace WebSocketSharp.Server
       }
 
       if (data.LongLength <= WebSocket.FragmentLength)
-        broadcastAsync (Opcode.Binary, data, completed);
+        broadcastAsync (WebSocketMessageType.Binary, data, completed);
       else
-        broadcastAsync (Opcode.Binary, new MemoryStream (data), completed);
+        broadcastAsync (WebSocketMessageType.Binary, new MemoryStream (data), completed);
     }
 
     /// <summary>
@@ -443,9 +443,9 @@ namespace WebSocketSharp.Server
 
       var rawData = Encoding.UTF8.GetBytes (data);
       if (rawData.LongLength <= WebSocket.FragmentLength)
-        broadcastAsync (Opcode.Text, rawData, completed);
+        broadcastAsync (WebSocketMessageType.Text, rawData, completed);
       else
-        broadcastAsync (Opcode.Text, new MemoryStream (rawData), completed);
+        broadcastAsync (WebSocketMessageType.Text, new MemoryStream (rawData), completed);
     }
 
     /// <summary>
@@ -493,9 +493,9 @@ namespace WebSocketSharp.Server
                 len));
 
           if (len <= WebSocket.FragmentLength)
-            broadcast (Opcode.Binary, data, completed);
+            broadcast (WebSocketMessageType.Binary, data, completed);
           else
-            broadcast (Opcode.Binary, new MemoryStream (data), completed);
+            broadcast (WebSocketMessageType.Binary, new MemoryStream (data), completed);
         },
         ex => _logger.Fatal (ex.ToString ()));
     }

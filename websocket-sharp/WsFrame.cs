@@ -61,29 +61,29 @@ namespace WebSocketSharp
 
     #region Public Constructors
 
-    public WsFrame (Opcode opcode, PayloadData payload)
-      : this (opcode, Mask.Mask, payload)
+    public WsFrame (WebSocketMessageType webSocketMessageType, PayloadData payload)
+      : this (webSocketMessageType, Mask.Mask, payload)
     {
     }
 
-    public WsFrame (Opcode opcode, Mask mask, PayloadData payload)
-      : this (Fin.Final, opcode, mask, payload)
+    public WsFrame (WebSocketMessageType webSocketMessageType, Mask mask, PayloadData payload)
+      : this (Fin.Final, webSocketMessageType, mask, payload)
     {
     }
 
-    public WsFrame (Fin fin, Opcode opcode, Mask mask, PayloadData payload)
-      : this (fin, opcode, mask, payload, false)
+    public WsFrame (Fin fin, WebSocketMessageType webSocketMessageType, Mask mask, PayloadData payload)
+      : this (fin, webSocketMessageType, mask, payload, false)
     {
     }
 
     public WsFrame (
-      Fin fin, Opcode opcode, Mask mask, PayloadData payload, bool compressed)
+      Fin fin, WebSocketMessageType webSocketMessageType, Mask mask, PayloadData payload, bool compressed)
     {
       Fin = fin;
-      Rsv1 = isData (opcode) && compressed ? Rsv.On : Rsv.Off;
+      Rsv1 = isData (webSocketMessageType) && compressed ? Rsv.On : Rsv.Off;
       Rsv2 = Rsv.Off;
       Rsv3 = Rsv.Off;
-      Opcode = opcode;
+      WebSocketMessageType = webSocketMessageType;
       Mask = mask;
 
       /* PayloadLen */
@@ -128,13 +128,13 @@ namespace WebSocketSharp
 
     internal bool IsBinary {
       get {
-        return Opcode == Opcode.Binary;
+        return WebSocketMessageType == WebSocketMessageType.Binary;
       }
     }
 
     internal bool IsClose {
       get {
-        return Opcode == Opcode.Close;
+        return WebSocketMessageType == WebSocketMessageType.Close;
       }
     }
 
@@ -146,21 +146,21 @@ namespace WebSocketSharp
 
     internal bool IsContinuation {
       get {
-        return Opcode == Opcode.Cont;
+        return WebSocketMessageType == WebSocketMessageType.Cont;
       }
     }
 
     internal bool IsControl {
       get {
-        var opcode = Opcode;
-        return opcode == Opcode.Close || opcode == Opcode.Ping || opcode == Opcode.Pong;
+        var opcode = WebSocketMessageType;
+        return opcode == WebSocketMessageType.Close || opcode == WebSocketMessageType.Ping || opcode == WebSocketMessageType.Pong;
       }
     }
 
     internal bool IsData {
       get {
-        var opcode = Opcode;
-        return opcode == Opcode.Binary || opcode == Opcode.Text;
+        var opcode = WebSocketMessageType;
+        return opcode == WebSocketMessageType.Binary || opcode == WebSocketMessageType.Text;
       }
     }
 
@@ -172,7 +172,7 @@ namespace WebSocketSharp
 
     internal bool IsFragmented {
       get {
-        return Fin == Fin.More || Opcode == Opcode.Cont;
+        return Fin == Fin.More || WebSocketMessageType == WebSocketMessageType.Cont;
       }
     }
 
@@ -184,26 +184,26 @@ namespace WebSocketSharp
 
     internal bool IsPerMessageCompressed {
       get {
-        var opcode = Opcode;
-        return (opcode == Opcode.Binary || opcode == Opcode.Text) && Rsv1 == Rsv.On;
+        var opcode = WebSocketMessageType;
+        return (opcode == WebSocketMessageType.Binary || opcode == WebSocketMessageType.Text) && Rsv1 == Rsv.On;
       }
     }
 
     internal bool IsPing {
       get {
-        return Opcode == Opcode.Ping;
+        return WebSocketMessageType == WebSocketMessageType.Ping;
       }
     }
 
     internal bool IsPong {
       get {
-        return Opcode == Opcode.Pong;
+        return WebSocketMessageType == WebSocketMessageType.Pong;
       }
     }
 
     internal bool IsText {
       get {
-        return Opcode == Opcode.Text;
+        return WebSocketMessageType == WebSocketMessageType.Text;
       }
     }
 
@@ -225,7 +225,7 @@ namespace WebSocketSharp
 
     public Rsv Rsv3 { get; private set; }
 
-    public Opcode Opcode { get; private set; }
+    public WebSocketMessageType WebSocketMessageType { get; private set; }
 
     public Mask Mask { get; private set; }
 
@@ -320,29 +320,29 @@ namespace WebSocketSharp
       return buffer.ToString ();
     }
 
-    private static bool isBinary (Opcode opcode)
+    private static bool isBinary (WebSocketMessageType webSocketMessageType)
     {
-      return opcode == Opcode.Binary;
+      return webSocketMessageType == WebSocketMessageType.Binary;
     }
 
-    private static bool isClose (Opcode opcode)
+    private static bool isClose (WebSocketMessageType webSocketMessageType)
     {
-      return opcode == Opcode.Close;
+      return webSocketMessageType == WebSocketMessageType.Close;
     }
 
-    private static bool isContinuation (Opcode opcode)
+    private static bool isContinuation (WebSocketMessageType webSocketMessageType)
     {
-      return opcode == Opcode.Cont;
+      return webSocketMessageType == WebSocketMessageType.Cont;
     }
 
-    private static bool isControl (Opcode opcode)
+    private static bool isControl (WebSocketMessageType webSocketMessageType)
     {
-      return opcode == Opcode.Close || opcode == Opcode.Ping || opcode == Opcode.Pong;
+      return webSocketMessageType == WebSocketMessageType.Close || webSocketMessageType == WebSocketMessageType.Ping || webSocketMessageType == WebSocketMessageType.Pong;
     }
 
-    private static bool isData (Opcode opcode)
+    private static bool isData (WebSocketMessageType webSocketMessageType)
     {
-      return opcode == Opcode.Text || opcode == Opcode.Binary;
+      return webSocketMessageType == WebSocketMessageType.Text || webSocketMessageType == WebSocketMessageType.Binary;
     }
 
     private static bool isFinal (Fin fin)
@@ -355,19 +355,19 @@ namespace WebSocketSharp
       return mask == Mask.Mask;
     }
 
-    private static bool isPing (Opcode opcode)
+    private static bool isPing (WebSocketMessageType webSocketMessageType)
     {
-      return opcode == Opcode.Ping;
+      return webSocketMessageType == WebSocketMessageType.Ping;
     }
 
-    private static bool isPong (Opcode opcode)
+    private static bool isPong (WebSocketMessageType webSocketMessageType)
     {
-      return opcode == Opcode.Pong;
+      return webSocketMessageType == WebSocketMessageType.Pong;
     }
 
-    private static bool isText (Opcode opcode)
+    private static bool isText (WebSocketMessageType webSocketMessageType)
     {
-      return opcode == Opcode.Text;
+      return webSocketMessageType == WebSocketMessageType.Text;
     }
 
     private static WsFrame parse (byte [] header, Stream stream, bool unmask)
@@ -383,7 +383,7 @@ namespace WebSocketSharp
       // RSV3
       var rsv3 = (header [0] & 0x10) == 0x10 ? Rsv.On : Rsv.Off;
       // Opcode
-      var opcode = (Opcode) (header [0] & 0x0f);
+      var opcode = (WebSocketMessageType) (header [0] & 0x0f);
       // MASK
       var mask = (header [1] & 0x80) == 0x80 ? Mask.Mask : Mask.Unmask;
       // Payload len
@@ -410,7 +410,7 @@ namespace WebSocketSharp
         Rsv1 = rsv1,
         Rsv2 = rsv2,
         Rsv3 = rsv3,
-        Opcode = opcode,
+        WebSocketMessageType = opcode,
         Mask = mask,
         PayloadLen = payloadLen
       };
@@ -491,7 +491,7 @@ namespace WebSocketSharp
     {
       /* Opcode */
 
-      var opcode = frame.Opcode.ToString ();
+      var opcode = frame.WebSocketMessageType.ToString ();
 
       /* Payload Len */
 
@@ -556,12 +556,12 @@ Extended Payload Len: {7}
 
     internal static WsFrame CreateCloseFrame (Mask mask, PayloadData payload)
     {
-      return new WsFrame (Opcode.Close, mask, payload);
+      return new WsFrame (WebSocketMessageType.Close, mask, payload);
     }
 
     internal static WsFrame CreatePongFrame (Mask mask, PayloadData payload)
     {
-      return new WsFrame (Opcode.Pong, mask, payload);
+      return new WsFrame (WebSocketMessageType.Pong, mask, payload);
     }
 
     #endregion
@@ -570,28 +570,28 @@ Extended Payload Len: {7}
 
     public static WsFrame CreateCloseFrame (Mask mask, byte [] data)
     {
-      return new WsFrame (Opcode.Close, mask, new PayloadData (data));
+      return new WsFrame (WebSocketMessageType.Close, mask, new PayloadData (data));
     }
 
     public static WsFrame CreateCloseFrame (Mask mask, CloseStatusCode code, string reason)
     {
-      return new WsFrame (Opcode.Close, mask, new PayloadData (((ushort) code).Append (reason)));
+      return new WsFrame (WebSocketMessageType.Close, mask, new PayloadData (((ushort) code).Append (reason)));
     }
 
     public static WsFrame CreateFrame (
-      Fin fin, Opcode opcode, Mask mask, byte [] data, bool compressed)
+      Fin fin, WebSocketMessageType webSocketMessageType, Mask mask, byte [] data, bool compressed)
     {
-      return new WsFrame (fin, opcode, mask, new PayloadData (data), compressed);
+      return new WsFrame (fin, webSocketMessageType, mask, new PayloadData (data), compressed);
     }
 
     public static WsFrame CreatePingFrame (Mask mask)
     {
-      return new WsFrame (Opcode.Ping, mask, new PayloadData ());
+      return new WsFrame (WebSocketMessageType.Ping, mask, new PayloadData ());
     }
 
     public static WsFrame CreatePingFrame (Mask mask, byte [] data)
     {
-      return new WsFrame (Opcode.Ping, mask, new PayloadData (data));
+      return new WsFrame (WebSocketMessageType.Ping, mask, new PayloadData (data));
     }
 
     public IEnumerator<byte> GetEnumerator ()
@@ -674,7 +674,7 @@ Extended Payload Len: {7}
         header = (header << 1) + (int) Rsv1;
         header = (header << 1) + (int) Rsv2;
         header = (header << 1) + (int) Rsv3;
-        header = (header << 4) + (int) Opcode;
+        header = (header << 4) + (int) WebSocketMessageType;
         header = (header << 1) + (int) Mask;
         header = (header << 7) + (int) PayloadLen;
         buffer.Write (((ushort) header).ToByteArrayInternally (ByteOrder.Big), 0, 2);
