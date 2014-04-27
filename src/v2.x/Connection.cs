@@ -58,6 +58,8 @@ namespace Microsoft.AspNet.SignalR.Client
 
         private string _connectionData;
 
+        TimeSpan _totalTransportConnectTimeout;
+
         // Used to synchronize state changes
         private readonly object _stateLock = new object();
 
@@ -78,6 +80,7 @@ namespace Microsoft.AspNet.SignalR.Client
 
 #if (NET35 || NET4 || NET45)
         private readonly X509CertificateCollection _certCollection = new X509CertificateCollection();
+        
 #endif
 
         /// <summary>
@@ -169,6 +172,7 @@ namespace Microsoft.AspNet.SignalR.Client
             TraceWriter = new DebugTextWriter();
             Headers = new HeaderDictionary(this);
             TransportConnectTimeout = TimeSpan.Zero;
+            _totalTransportConnectTimeout = TimeSpan.Zero;
 
             // Current client protocol
             Protocol = new Version(1, 3);
@@ -179,6 +183,28 @@ namespace Microsoft.AspNet.SignalR.Client
         /// This value is modified by adding the server's TransportConnectTimeout configuration value.
         /// </summary>
         public TimeSpan TransportConnectTimeout { get; set; }
+        /// <summary>
+        /// The amount of time a transport will wait (while connecting) before failing.
+        /// This is the total vaue obtained by adding the server's configuration value and the timeout specified by the user
+        /// </summary>
+        TimeSpan IConnection.TotalTransportConnectTimeout {
+            get {
+                return _totalTransportConnectTimeout;
+            }
+        }
+
+        /// <summary>
+        /// The maximum amount of time a connection will allow to try and reconnect.
+        /// This value is equivalent to the summation of the servers disconnect and keep alive timeout values.
+        /// </summary>
+        TimeSpan IConnection.ReconnectWindow {
+            get {
+                return _reconnectWindow;
+            }
+            set {
+                _reconnectWindow = value;
+            }
+        }
 
         public Version Protocol { get; set; }
 

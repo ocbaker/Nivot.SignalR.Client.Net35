@@ -188,7 +188,6 @@ namespace Microsoft.AspNet.SignalR.Client.Transports
 
                     _connectionInfo.Connection.OnError(ex);
                 }
-
                 await Task.Delay(ReconnectDelay);
             }
         }

@@ -22,6 +22,7 @@ namespace Microsoft.AspNet.SignalR.Client
     {
         Version Protocol { get; set; }
         TimeSpan TransportConnectTimeout { get; set; }
+        TimeSpan ReconnectWindow { get; set; }
         KeepAliveData KeepAliveData { get; set; }
         string MessageId { get; set; }
         string GroupsToken { get; set; }
@@ -52,6 +53,11 @@ namespace Microsoft.AspNet.SignalR.Client
         ICredentials Credentials { get; set; }
         CookieContainer CookieContainer { get; set; }
         JsonSerializer JsonSerializer { get; }
+        /// <summary>
+        /// The amount of time a transport will wait (while connecting) before failing.
+        /// This is the total vaue obtained by adding the server's configuration value and the timeout specified by the user
+        /// </summary>
+        TimeSpan TotalTransportConnectTimeout { get; }
 
         [SuppressMessage("Microsoft.Naming", "CA1716:IdentifiersShouldNotMatchKeywords", MessageId = "Stop", Justification = "Works in VB.NET.")]
         void Stop();
