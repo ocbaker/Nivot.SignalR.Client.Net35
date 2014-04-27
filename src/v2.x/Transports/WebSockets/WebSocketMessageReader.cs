@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using WebSocketSharp;
 
 namespace Microsoft.AspNet.SignalR.Client.Transports.WebSockets
 {
@@ -26,7 +28,7 @@ namespace Microsoft.AspNet.SignalR.Client.Transports.WebSockets
 
             // Read the first time with an empty array
             WebSocketReceiveResult receiveResult = await webSocket.ReceiveAsync(_emptyArraySegment, disconnectToken).ConfigureAwait(continueOnCapturedContext: false);
-
+            
             if (TryGetMessage(receiveResult, null, out message)) {
                 return message;
             }

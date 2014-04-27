@@ -125,6 +125,7 @@
     <Compile Include="WebSockets\DefaultWebSocketHandler.cs" />
     <Compile Include="WebSockets\IWebSocket.cs" />
     <Compile Include="WebSockets\WebSocketHandler.cs" />
+    <Compile Include="WebSockets\WebSocketRecieveResult.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources.resx">
