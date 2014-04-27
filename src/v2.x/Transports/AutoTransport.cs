@@ -2,8 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNet.SignalR.Client.Http;
@@ -28,7 +26,7 @@ namespace Microsoft.AspNet.SignalR.Client.Transports
 
             _transports = new List<IClientTransport>()
             {
-#if NET45
+#if NET45 || NET35
                 new WebSocketTransport(httpClient),
 #endif
                 new ServerSentEventsTransport(httpClient),
@@ -69,7 +67,7 @@ namespace Microsoft.AspNet.SignalR.Client.Transports
         public Task<NegotiationResponse> Negotiate(IConnection connection, string connectionData)
         {
             var task = GetNegotiateResponse(connection, connectionData);
-#if NET45
+#if NET45 || NET35
             return task.Then(response =>
             {
                 if (!response.TryWebSockets)
