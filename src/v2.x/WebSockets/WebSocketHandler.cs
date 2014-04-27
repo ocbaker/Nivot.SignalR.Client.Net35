@@ -52,7 +52,7 @@ namespace Microsoft.AspNet.SignalR.Client.WebSockets
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
         public virtual Task SendAsync(ArraySegment<byte> message, WebSocketMessageType messageType, bool endOfMessage = true) {
-            if (WebSocket.State != WebSocketState.Open) {
+            if (WebSocket.ReadyState != WebSocketState.Open) {
                 return TaskAsyncHelper.Empty;
             }
 
@@ -61,7 +61,7 @@ namespace Microsoft.AspNet.SignalR.Client.WebSockets
             return _sendQueue.Enqueue(async state => {
                 var context = (SendContext)state;
 
-                if (context.Handler.WebSocket.State != WebSocketState.Open) {
+                if (context.Handler.WebSocket.ReadyState != WebSocketState.Open) {
                     return;
                 }
 
@@ -171,8 +171,8 @@ namespace Microsoft.AspNet.SignalR.Client.WebSockets
             }
 
             try {
-                if (WebSocket.ReadyState == WebSocketState.Closed ||
-                    WebSocket.State == WebSocketState.Aborted) {
+                if (WebSocket.ReadyState == WebSocketState.Closed/* ||
+                    WebSocket.ReadyState == WebSocketState.Aborted*/) {
                     // No-op if the socket is already closed or aborted
                 } else {
                     // Close the socket
@@ -203,9 +203,9 @@ namespace Microsoft.AspNet.SignalR.Client.WebSockets
         }
 
         private static bool IsClosedOrClosedSent(WebSocket webSocket) {
-            return webSocket.State == WebSocketState.Closed ||
+            return webSocket.ReadyState == WebSocketState.Closed/* ||
                    webSocket.State == WebSocketState.CloseSent ||
-                   webSocket.State == WebSocketState.Aborted;
+                   webSocket.State == WebSocketState.Aborted*/;
         }
 
         private class CloseContext

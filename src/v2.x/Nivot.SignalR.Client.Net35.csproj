@@ -124,6 +124,7 @@
     <Compile Include="WebSockets\ClientWebSocket.cs" />
     <Compile Include="WebSockets\DefaultWebSocketHandler.cs" />
     <Compile Include="WebSockets\IWebSocket.cs" />
+    <Compile Include="WebSockets\WebSocketCloseStatus.cs" />
     <Compile Include="WebSockets\WebSocketHandler.cs" />
     <Compile Include="WebSockets\WebSocketRecieveResult.cs" />
   </ItemGroup>

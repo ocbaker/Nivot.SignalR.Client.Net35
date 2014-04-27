@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNet.SignalR.Client.WebSockets;
 using WebSocketSharp;
 
 namespace Microsoft.AspNet.SignalR.Client.Transports.WebSockets
