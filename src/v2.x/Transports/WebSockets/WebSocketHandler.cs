@@ -48,8 +48,24 @@ namespace Microsoft.AspNet.SignalR.Client.Transports.WebSockets
         }
 
         internal Task SendAsync(string message) {
-            var buffer = Encoding.UTF8.GetBytes(message);
-            return SendAsync(new ArraySegment<byte>(buffer), WebSocketMessageType.Text);
+            return _sendQueue.Enqueue(async state => {
+                bool? completed = null;
+                var cts = new CancellationTokenSource();
+                try {
+                    var context = (string)state;
+                    await TaskEx.Run(() => WebSocket.SendAsync(context, (x) => {
+                        completed = x;
+                        cts.Cancel();
+                    })).ConfigureAwait(false);
+
+                    await TaskEx.Delay(1000 * 60, cts.Token).ConfigureAwait(false);
+                    if(completed == false)
+                        throw new Exception(context);
+                } catch (Exception ex) {
+                    // Swallow exceptions on send
+                    Trace.TraceError("Error while sending: " + ex);
+                }
+            }, message);
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]

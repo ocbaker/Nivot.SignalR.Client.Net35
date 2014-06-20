@@ -46,33 +46,50 @@ namespace Microsoft.AspNet.SignalR.Client.WebSockets
         }
 
         internal Task SendAsync(string message) {
-            var buffer = Encoding.UTF8.GetBytes(message);
-            return SendAsync(new ArraySegment<byte>(buffer), WebSocketMessageType.Text);
-        }
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
-        public virtual Task SendAsync(ArraySegment<byte> message, WebSocketMessageType messageType, bool endOfMessage = true) {
-            if (WebSocket.ReadyState != WebSocketState.Open) {
-                return TaskAsyncHelper.Empty;
-            }
-
-            var sendContext = new SendContext(this, message, messageType, endOfMessage);
-
             return _sendQueue.Enqueue(async state => {
-                var context = (SendContext)state;
-
-                if (context.Handler.WebSocket.ReadyState != WebSocketState.Open) {
-                    return;
-                }
-
+                bool? completed = null;
+                var cts = new CancellationTokenSource();
                 try {
-                    await context.Handler.WebSocket.SendAsync(context.Message, context.MessageType, context.EndOfMessage, CancellationToken.None);
+                    var context = (string)state;
+                    await TaskEx.Run(() => WebSocket.SendAsync(context, (x) => {
+                        completed = x;
+                        cts.Cancel();
+                    })).ConfigureAwait(false);
+
+                    await TaskEx.Delay(1000 * 60, cts.Token).ConfigureAwait(false);
+                    if (completed == false)
+                        throw new Exception(context);
                 } catch (Exception ex) {
                     // Swallow exceptions on send
                     Trace.TraceError("Error while sending: " + ex);
                 }
-            },
-            sendContext);
+            }, message);
+        }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed"), Obsolete("Currently Not Supported", true)]
+        public virtual Task SendAsync(ArraySegment<byte> message, WebSocketMessageType messageType, bool endOfMessage = true) {
+            throw new NotSupportedException();
+            //if (WebSocket.ReadyState != WebSocketState.Open) {
+            //    return TaskAsyncHelper.Empty;
+            //}
+
+            //var sendContext = new SendContext(this, message, messageType, endOfMessage);
+
+            //return _sendQueue.Enqueue(async state => {
+            //    var context = (SendContext)state;
+
+            //    if (context.Handler.WebSocket.ReadyState != WebSocketState.Open) {
+            //        return;
+            //    }
+
+            //    try {
+            //        await context.Handler.WebSocket.SendAsync(context.Message, context.MessageType, context.EndOfMessage, CancellationToken.None);
+            //    } catch (Exception ex) {
+            //        // Swallow exceptions on send
+            //        Trace.TraceError("Error while sending: " + ex);
+            //    }
+            //},
+            //sendContext);
         }
 
         public virtual Task CloseAsync() {
@@ -150,7 +167,7 @@ namespace Microsoft.AspNet.SignalR.Client.WebSockets
                             // If we received an incoming CLOSE message, we'll queue a CLOSE frame to be sent.
                             // We'll give the queued frame some amount of time to go out on the wire, and if a
                             // timeout occurs we'll give up and abort the connection.
-                            await Task.WhenAny(CloseAsync(), Task.Delay(_closeTimeout));
+                            await TaskEx.WhenAny(CloseAsync(), TaskEx.Delay(_closeTimeout));
                             break;
                     }
                 }

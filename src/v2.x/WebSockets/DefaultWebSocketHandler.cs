@@ -73,29 +73,31 @@ namespace Microsoft.AspNet.SignalR.Client.WebSockets
         }
 
         public Task SendChunk(ArraySegment<byte> message) {
-            if (_closed) {
-                return TaskAsyncHelper.Empty;
-            }
+            throw new NotSupportedException();
+            //if (_closed) {
+            //    return TaskAsyncHelper.Empty;
+            //}
 
-            if (NextMessageToSend.Count == 0) {
-                NextMessageToSend = message;
-                return TaskAsyncHelper.Empty;
-            } else {
-                ArraySegment<byte> messageToSend = NextMessageToSend;
-                NextMessageToSend = message;
-                return SendAsync(messageToSend, WebSocketMessageType.Text, endOfMessage: false);
-            }
+            //if (NextMessageToSend.Count == 0) {
+            //    NextMessageToSend = message;
+            //    return TaskAsyncHelper.Empty;
+            //} else {
+            //    ArraySegment<byte> messageToSend = NextMessageToSend;
+            //    NextMessageToSend = message;
+            //    return SendAsync(messageToSend, WebSocketMessageType.Text, endOfMessage: false);
+            //}
         }
 
         public Task Flush() {
-            if (_closed) {
-                return TaskAsyncHelper.Empty;
-            }
+            throw new NotSupportedException();
+            //if (_closed) {
+            //    return TaskAsyncHelper.Empty;
+            //}
 
-            var messageToSend = NextMessageToSend;
-            NextMessageToSend = new ArraySegment<byte>();
+            //var messageToSend = NextMessageToSend;
+            //NextMessageToSend = new ArraySegment<byte>();
 
-            return SendAsync(messageToSend, WebSocketMessageType.Text, endOfMessage: true);
+            //return SendAsync(messageToSend, WebSocketMessageType.Text, endOfMessage: true);
         }
     }
 }

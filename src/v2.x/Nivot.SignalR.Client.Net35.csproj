@@ -116,7 +116,6 @@
     <Compile Include="Transports\ServerSentEvents\EventType.cs" />
     <Compile Include="Transports\ServerSentEvents\SseEvent.cs" />
     <Compile Include="Transports\TransportHelper.cs" />
-    <Compile Include="Transports\WebSockets\WebSocketHandler.cs" />
     <Compile Include="Transports\WebSockets\WebSocketMessage.cs" />
     <Compile Include="Transports\WebSockets\WebSocketMessageReader.cs" />
     <Compile Include="Transports\WebSockets\WebSocketWrapperRequest.cs" />
