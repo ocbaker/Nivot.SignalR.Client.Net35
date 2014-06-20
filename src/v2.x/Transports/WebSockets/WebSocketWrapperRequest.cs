@@ -5,9 +5,20 @@ using System.Net;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNet.SignalR.Client.Http;
 using Microsoft.AspNet.SignalR.Client.WebSockets;
+using NetworkCredential = WebSocketSharp.Net.NetworkCredential;
 
 namespace Microsoft.AspNet.SignalR.Client.Transports.WebSockets
 {
+
+    public class NetworkCredentialMap : NetworkCredential, ICredentials
+    {
+        public NetworkCredentialMap(string username, string password) : base(username, password) {}
+        public NetworkCredentialMap(string username, string password, string domain, params string[] roles) : base(username, password, domain, roles) {}
+        public System.Net.NetworkCredential GetCredential(Uri uri, string authType) {
+            throw new NotImplementedException();
+        }
+    }
+
     internal class WebSocketWrapperRequest : IRequest
     {
         private readonly ClientWebSocket _clientWebSocket;
@@ -31,30 +42,34 @@ namespace Microsoft.AspNet.SignalR.Client.Transports.WebSockets
         [SuppressMessage("Microsoft.Performance", "CA1811:No upstream or protected callers", Justification = "Keeping the get accessors for future use")]
         public ICredentials Credentials {
             get {
-                return _clientWebSocket.Options.Credentials;
+                return (NetworkCredentialMap)_clientWebSocket.Credentials;
             }
             set {
-                _clientWebSocket.Options.Credentials = value;
+                _clientWebSocket.Credentials = (NetworkCredential)value;
             }
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1811:No upstream or protected callers", Justification = "Keeping the get accessors for future use")]
         public CookieContainer CookieContainer {
             get {
-                return _clientWebSocket.Options.Cookies;
+                throw new NotSupportedException();
+                //return _clientWebSocket.Cookies;
             }
             set {
-                _clientWebSocket.Options.Cookies = value;
+                throw new NotSupportedException();
+                //_clientWebSocket.Options.Cookies = value;
             }
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1811:No upstream or protected callers", Justification = "Keeping the get accessors for future use")]
         public IWebProxy Proxy {
             get {
-                return _clientWebSocket.Options.Proxy;
+                throw new NotSupportedException();
+                //return _clientWebSocket.Proxy;
             }
             set {
-                _clientWebSocket.Options.Proxy = value;
+                throw new NotSupportedException();
+                //_clientWebSocket.Options.Proxy = value;
             }
         }
 
@@ -73,7 +88,8 @@ namespace Microsoft.AspNet.SignalR.Client.Transports.WebSockets
             }
 
             foreach (KeyValuePair<string, string> headerEntry in headers) {
-                _clientWebSocket.Options.SetRequestHeader(headerEntry.Key, headerEntry.Value);
+                throw new NotSupportedException();
+                //_clientWebSocket.SetRequestHeader(headerEntry.Key, headerEntry.Value);
             }
         }
 
@@ -81,8 +97,8 @@ namespace Microsoft.AspNet.SignalR.Client.Transports.WebSockets
             if (certificates == null) {
                 throw new ArgumentNullException("certificates");
             }
-
-            _clientWebSocket.Options.ClientCertificates = certificates;
+            throw new NotSupportedException();
+            //_clientWebSocket.ClientCertificates = certificates;
         }
 
         public void Abort() {

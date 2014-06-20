@@ -274,6 +274,9 @@ namespace WebSocketSharp
       get {
         return _credentials;
       }
+      set {
+        _credentials = value;
+      }
     }
 
     /// <summary>
