@@ -109,7 +109,7 @@ namespace Microsoft.AspNet.SignalR.Client.Transports
             CancellationTokenSource linkedCts = CancellationTokenSource.CreateLinkedTokenSource(_webSocketTokenSource.Token, _disconnectToken);
             CancellationToken token = linkedCts.Token;
 
-            _webSocket = new ClientWebSocket(builder.Uri.ToString(), token, "");
+            _webSocket = new ClientWebSocket(builder.Uri.ToString(), token, null);
             _connectionInfo.Connection.PrepareRequest(new WebSocketWrapperRequest(_webSocket, _connectionInfo.Connection));
 
             _webSocket.ConnectAsync();

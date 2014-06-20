@@ -97,6 +97,8 @@ namespace Microsoft.AspNet.SignalR.Client.Transports.WebSockets
             if (certificates == null) {
                 throw new ArgumentNullException("certificates");
             }
+            if (certificates.Count == 0)
+                return;
             throw new NotSupportedException();
             //_clientWebSocket.ClientCertificates = certificates;
         }
