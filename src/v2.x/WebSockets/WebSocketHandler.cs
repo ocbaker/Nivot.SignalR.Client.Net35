@@ -56,7 +56,7 @@ namespace Microsoft.AspNet.SignalR.Client.WebSockets
                         cts.Cancel();
                     })).ConfigureAwait(false);
 
-                    await TaskEx.Delay(1000 * 60, cts.Token).ConfigureAwait(false);
+                    await TaskEx.Delay(1000 * 60, cts.Token);
                     if (completed == false)
                         throw new Exception(context);
                 } catch (Exception ex) {
@@ -107,7 +107,11 @@ namespace Microsoft.AspNet.SignalR.Client.WebSockets
                 }
 
                 try {
-                    await context.Handler.WebSocket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, "", CancellationToken.None);
+                    WebSocket.CloseAsync(CloseStatusCode.Normal, "");
+
+                    await TaskEx.Run(() => {
+                        while (WebSocket.ReadyState != WebSocketState.Closed) { }
+                    }, CancellationToken.None);
                 } catch (Exception ex) {
                     // Swallow exceptions on close
                     Trace.TraceError("Error while closing the websocket: " + ex);
@@ -193,7 +197,11 @@ namespace Microsoft.AspNet.SignalR.Client.WebSockets
                     // No-op if the socket is already closed or aborted
                 } else {
                     // Close the socket
-                    await WebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "", CancellationToken.None);
+                    WebSocket.CloseAsync(CloseStatusCode.Normal, "");
+
+                    await TaskEx.Run(() => {
+                        while (WebSocket.ReadyState != WebSocketState.Closed) {}
+                    }, CancellationToken.None);
                 }
             } finally {
                 OnClose();
