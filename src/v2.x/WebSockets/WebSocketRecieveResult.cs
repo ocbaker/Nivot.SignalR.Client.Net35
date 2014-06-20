@@ -42,6 +42,7 @@ namespace Microsoft.AspNet.SignalR.Client.WebSockets
         public WebSocketMessageType MessageType { get; private set; }
         public Nullable<WebSocketCloseStatus> CloseStatus { get; private set; }
         public string CloseStatusDescription { get; private set; }
+        public string Message { get; set; }
 
         internal WebSocketReceiveResult Copy(int count) {
             if(count >= 0)
