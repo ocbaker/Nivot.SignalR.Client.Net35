@@ -110,6 +110,10 @@ namespace Microsoft.AspNet.SignalR.Client.Transports
             CancellationToken token = linkedCts.Token;
 
             _webSocket = new ClientWebSocket(builder.Uri.ToString(), token, null);
+
+            _webSocket.OnOpen += (sender, args) => _connectionInfo.Connection.ChangeState(_connectionInfo.Connection.State, ConnectionState.Connected);
+            _webSocket.OnClose += (sender, args) => _connectionInfo.Connection.ChangeState(_connectionInfo.Connection.State, ConnectionState.Disconnected);
+
             _connectionInfo.Connection.PrepareRequest(new WebSocketWrapperRequest(_webSocket, _connectionInfo.Connection));
 
             _webSocket.ConnectAsync();

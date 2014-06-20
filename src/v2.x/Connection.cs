@@ -445,7 +445,11 @@ namespace Microsoft.AspNet.SignalR.Client
 
                                 return StartTransport();
                             })
-                            .ContinueWithNotComplete(() => Disconnect());
+                            .ContinueWithNotComplete(() => {
+                                /*
+                                 * TODO: Consider why this will fire regardless of operation.
+                                 * Disconnect();*/
+                            });
         }
 
         private Task StartTransport()

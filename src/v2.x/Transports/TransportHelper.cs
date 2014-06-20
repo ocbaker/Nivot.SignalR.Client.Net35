@@ -88,6 +88,8 @@ namespace Microsoft.AspNet.SignalR.Client.Transports
                 qsBuilder.Append("&connectionData=" + connectionData);
             }
 
+            qsBuilder.Append("&clientProtocol=" + connection.Protocol);
+
             string customQuery = connection.QueryString;
 
             if (!String.IsNullOrEmpty(customQuery))
