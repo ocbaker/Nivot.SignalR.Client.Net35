@@ -27,6 +27,7 @@ namespace Microsoft.AspNet.SignalR.Client.Transports.WebSockets
         static async Task<WebSocketReceiveResult> WSRecieveAsync(WebSocket webSocket, ArraySegment<byte> arraySegment, CancellationToken disconnectToken) {
             WebSocketReceiveResult result = null;
             Action removeEvent = null;
+            bool cancelled = true;
             EventHandler<MessageEventArgs> webSocketOnOnMessage = (sender, args) => {
                 args.RawData.CopyTo(arraySegment.Array, 0);
 
@@ -40,7 +41,10 @@ namespace Microsoft.AspNet.SignalR.Client.Transports.WebSockets
                 while (result == null) {
                     
                 }
+                cancelled = false;
             }, disconnectToken);
+            if (cancelled)
+                removeEvent();
             return result;
         }
 
