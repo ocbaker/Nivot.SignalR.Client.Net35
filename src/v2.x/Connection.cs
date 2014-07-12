@@ -187,6 +187,7 @@ namespace Microsoft.AspNet.SignalR.Client
         /// The amount of time a transport will wait (while connecting) before failing.
         /// This is the total vaue obtained by adding the server's configuration value and the timeout specified by the user
         /// </summary>
+        [Obsolete("Please use TransportConnectTimeout")]
         TimeSpan IConnection.TotalTransportConnectTimeout {
             get {
                 return _totalTransportConnectTimeout;
