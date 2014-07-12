@@ -908,8 +908,9 @@ namespace WebSocketSharp
     {
       var path = _uri.PathAndQuery;
       var host = _uri.Port == 80 ? _uri.DnsSafeHost : _uri.Authority;
+      var uri = _secure ? "https://" : "http://" + host + path;
 
-      var req = new HandshakeRequest (path);
+      var req = new HandshakeRequest (uri);
       var headers = req.Headers;
 
       headers ["Host"] = host;
