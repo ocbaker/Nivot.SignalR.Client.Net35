@@ -87,6 +87,7 @@
     <Compile Include="Infrastructure\TransportAbortHandler.cs" />
     <Compile Include="Infrastructure\TransportInitializationHandler.cs" />
     <Compile Include="Infrastructure\UrlEncoder.cs" />
+    <Compile Include="InternalHelperExtensions.cs" />
     <Compile Include="KeepAliveData.cs" />
     <Compile Include="Infrastructure\ExceptionHelper.cs" />
     <Compile Include="Infrastructure\ThreadSafeInvoker.cs" />

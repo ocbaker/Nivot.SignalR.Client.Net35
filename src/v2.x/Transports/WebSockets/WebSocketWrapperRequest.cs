@@ -5,6 +5,8 @@ using System.Net;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNet.SignalR.Client.Http;
 using Microsoft.AspNet.SignalR.Client.WebSockets;
+using WebSocketSharp;
+using WebSocketSharp.Net;
 using NetworkCredential = WebSocketSharp.Net.NetworkCredential;
 
 namespace Microsoft.AspNet.SignalR.Client.Transports.WebSockets
@@ -52,11 +54,11 @@ namespace Microsoft.AspNet.SignalR.Client.Transports.WebSockets
         [SuppressMessage("Microsoft.Performance", "CA1811:No upstream or protected callers", Justification = "Keeping the get accessors for future use")]
         public CookieContainer CookieContainer {
             get {
-                throw new NotSupportedException();
+                throw new NotSupportedException("Please Add cookie to the Connection where they will be converted for Websocket Sharp");
                 //return _clientWebSocket.Cookies;
             }
             set {
-                throw new NotSupportedException();
+                throw new NotSupportedException("Please Add cookie to the Connection where they will be converted for Websocket Sharp");
                 //_clientWebSocket.Options.Cookies = value;
             }
         }
@@ -116,7 +118,11 @@ namespace Microsoft.AspNet.SignalR.Client.Transports.WebSockets
             }
 
             if (_connection.CookieContainer != null) {
-                CookieContainer = _connection.CookieContainer;
+                foreach (System.Net.Cookie cookie in _connection.CookieContainer.GetAllCookies()) {
+                    _clientWebSocket.SetCookie(new WebSocketSharp.Net.Cookie(cookie.Name, cookie.Value, cookie.Path,
+                        cookie.Domain));
+                }
+                //CookieContainer = _connection.CookieContainer;
             }
 
             if (_connection.Credentials != null) {
