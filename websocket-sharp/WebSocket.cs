@@ -332,7 +332,7 @@ namespace WebSocketSharp
         return _logger;
       }
 
-      internal set {
+        set {
         _logger = value;
       }
     }

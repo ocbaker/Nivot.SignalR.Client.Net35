@@ -191,7 +191,7 @@ namespace WebSocketSharp
       var log = data.ToString ();
       Console.WriteLine (log);
       if (path != null && path.Length > 0)
-        writeToFile (path, log);
+          writeToFile (path, log);
     }
 
     private void output (string message, LogLevel level)
@@ -239,7 +239,7 @@ namespace WebSocketSharp
       if (_level > LogLevel.Debug)
         return;
 
-      output (message, LogLevel.Debug);
+      output ("Debug: " + message, LogLevel.Debug);
     }
 
     /// <summary>
@@ -257,7 +257,7 @@ namespace WebSocketSharp
       if (_level > LogLevel.Error)
         return;
 
-      output (message, LogLevel.Error);
+      output ("Error:" + message, LogLevel.Error);
     }
 
     /// <summary>
@@ -268,7 +268,7 @@ namespace WebSocketSharp
     /// </param>
     public void Fatal (string message)
     {
-      output (message, LogLevel.Fatal);
+      output ("Fatal: " + message, LogLevel.Fatal);
     }
 
     /// <summary>
@@ -286,7 +286,7 @@ namespace WebSocketSharp
       if (_level > LogLevel.Info)
         return;
 
-      output (message, LogLevel.Info);
+      output ("Info: " + message, LogLevel.Info);
     }
 
     /// <summary>
@@ -304,7 +304,7 @@ namespace WebSocketSharp
       if (_level > LogLevel.Trace)
         return;
 
-      output (message, LogLevel.Trace);
+      output ("Trace: " + message, LogLevel.Trace);
     }
 
     /// <summary>
@@ -322,7 +322,7 @@ namespace WebSocketSharp
       if (_level > LogLevel.Warn)
         return;
 
-      output (message, LogLevel.Warn);
+      output ("Warn: " + message, LogLevel.Warn);
     }
 
     #endregion

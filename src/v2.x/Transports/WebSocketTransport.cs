@@ -111,6 +111,7 @@ namespace Microsoft.AspNet.SignalR.Client.Transports
 
             _webSocket = new ClientWebSocket(builder.Uri.ToString(), token, null);
 
+            _webSocket.Log = new Logger(LogLevel.Trace, null, ((data, s) => _connectionInfo.Connection.Trace(TraceLevels.All, "WebSocket - {0}", data.Message)));
             _webSocket.OnOpen += (sender, args) => _connectionInfo.Connection.ChangeState(_connectionInfo.Connection.State, ConnectionState.Connected);
             _webSocket.OnClose += (sender, args) => _connectionInfo.Connection.ChangeState(_connectionInfo.Connection.State, ConnectionState.Disconnected);
 
