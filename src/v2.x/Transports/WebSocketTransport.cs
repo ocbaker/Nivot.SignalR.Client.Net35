@@ -122,6 +122,7 @@ namespace Microsoft.AspNet.SignalR.Client.Transports
         }
 
         public void Abort(IConnection connection, TimeSpan timeout, string connectionData) {
+            _webSocketTokenSource.Cancel();
             _abortHandler.Abort(connection, timeout, connectionData);
         }
 

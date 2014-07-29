@@ -12,19 +12,7 @@ namespace Microsoft.AspNet.SignalR.Client.Transports.WebSockets
 {
     internal static class WebSocketMessageReader
     {
-        private static readonly ArraySegment<byte> _emptyArraySegment = new ArraySegment<byte>(new byte[0]);
-
-        private static byte[] BufferSliceToByteArray(byte[] buffer, int count) {
-            byte[] newArray = new byte[count];
-            Buffer.BlockCopy(buffer, 0, newArray, 0, count);
-            return newArray;
-        }
-
-        private static string BufferSliceToString(byte[] buffer, int count) {
-            return Encoding.UTF8.GetString(buffer, 0, count);
-        }
-
-        static async Task<WebSocketReceiveResult> WSRecieveAsync(WebSocket webSocket, ArraySegment<byte> arraySegment, CancellationToken disconnectToken) {
+        static async Task<WebSocketReceiveResult> WSRecieveAsync(WebSocket webSocket, CancellationToken disconnectToken) {
             WebSocketReceiveResult result = null;
             Action removeEvent = null;
             bool cancelled = true;
@@ -36,8 +24,12 @@ namespace Microsoft.AspNet.SignalR.Client.Transports.WebSockets
             webSocket.OnMessage += webSocketOnOnMessage;
 
             await TaskEx.Run(() => {
-                while (result == null) {
-                    
+                while (result == null && !disconnectToken.IsCancellationRequested) {
+                    Thread.Sleep(10);
+                }
+                if (disconnectToken.IsCancellationRequested) {
+                    cancelled = true;
+                    return;
                 }
                 cancelled = false;
             }, disconnectToken);
@@ -48,7 +40,7 @@ namespace Microsoft.AspNet.SignalR.Client.Transports.WebSockets
 
         public static async Task<WebSocketMessage> ReadMessageAsync(WebSocket webSocket, int bufferSize,
             int? maxMessageSize, CancellationToken disconnectToken) {
-            WebSocketReceiveResult receiveResult = await WSRecieveAsync(webSocket, _emptyArraySegment, disconnectToken).ConfigureAwait(false);
+            WebSocketReceiveResult receiveResult = await WSRecieveAsync(webSocket, disconnectToken).ConfigureAwait(false);
             if(receiveResult.MessageType == WebSocketMessageType.Close)
                 return WebSocketMessage.CloseMessage;
             return new WebSocketMessage(receiveResult.Message, receiveResult.MessageType);
