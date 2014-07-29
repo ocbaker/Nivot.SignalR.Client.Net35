@@ -55,6 +55,7 @@ namespace Microsoft.AspNet.SignalR.Client
         private Task _connectTask;
 
         private TextWriter _traceWriter;
+        Action<string> _onTrace;
 
         private string _connectionData;
 
@@ -370,6 +371,10 @@ namespace Microsoft.AspNet.SignalR.Client
                 }
             }
         }
+        public Action<string> OnTrace {
+            get { return _onTrace; }
+            set { _onTrace = value; }
+        }
 
         /// <summary>
         /// Starts the <see cref="Connection"/>.
@@ -678,13 +683,15 @@ namespace Microsoft.AspNet.SignalR.Client
         {
             lock (_traceLock)
             {
-                if (TraceLevel.HasFlag(level))
-                {
-                    _traceWriter.WriteLine(
-                        DateTime.UtcNow.ToString("HH:mm:ss.fffffff", CultureInfo.InvariantCulture) + " - " +
+                if (TraceLevel.HasFlag(level)) {
+                    var message = string.Format(
+                            DateTime.UtcNow.ToString("HH:mm:ss.fffffff", CultureInfo.InvariantCulture) + " - " +
                             (ConnectionId ?? "null") + " - " +
                             format,
-                        args);
+                            args);
+                    if (_onTrace != null)
+                        _onTrace(message);
+                    _traceWriter.WriteLine(message);
                 }
             }
         }
