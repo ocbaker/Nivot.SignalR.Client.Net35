@@ -168,6 +168,10 @@ namespace Microsoft.AspNet.SignalR.Client.Transports
                             // Raise the reconnect event if the connection comes back up
                             connection.OnReconnected();
                         }
+						else
+						{
+							connection.ChangeState(ConnectionState.Disconnected, ConnectionState.Connected);
+						}
                     };
 
                     eventSource.Message = sseEvent =>
