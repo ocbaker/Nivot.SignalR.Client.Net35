@@ -42,7 +42,7 @@ namespace Microsoft.AspNet.SignalR.Client.Transports
 
             if (!String.IsNullOrEmpty(connectionData))
             {
-                negotiateUrl += "&connectionData=" + connectionData;
+                negotiateUrl += "&connectionData=" + Uri.EscapeDataString(connectionData);
             }
 
             httpClient.Initialize(connection);
@@ -85,7 +85,7 @@ namespace Microsoft.AspNet.SignalR.Client.Transports
 
             if (connectionData != null)
             {
-                qsBuilder.Append("&connectionData=" + connectionData);
+                qsBuilder.Append("&connectionData=" + Uri.EscapeDataString(connectionData));
             }
 
             qsBuilder.Append("&clientProtocol=" + connection.Protocol);

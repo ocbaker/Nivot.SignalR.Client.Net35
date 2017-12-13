@@ -91,7 +91,7 @@ namespace Microsoft.AspNet.SignalR.Client.Transports
             url += String.Format(CultureInfo.InvariantCulture,
                                 _sendQueryString,
                                 _transport,
-                                connectionData,
+                                Uri.EscapeDataString(connectionData),
                                 Uri.EscapeDataString(connection.ConnectionToken),
                                 customQueryString);
 

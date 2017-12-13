@@ -64,7 +64,7 @@ namespace Microsoft.AspNet.SignalR.Client.Infrastructure
                     string url = connection.Url + "abort" + String.Format(CultureInfo.InvariantCulture,
                                                                           _abortQueryString,
                                                                           _transportName,
-                                                                          connectionData,
+                                                                          Uri.EscapeDataString(connectionData),
                                                                           Uri.EscapeDataString(connection.ConnectionToken),
                                                                           null);
 

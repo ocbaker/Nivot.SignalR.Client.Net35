@@ -97,11 +97,12 @@ namespace Microsoft.AspNet.SignalR.Client.Transports
 
         private async Task PerformConnect(bool reconnecting) {
             var url = _connectionInfo.Connection.Url + (reconnecting ? "reconnect" : "connect");
-            url += TransportHelper.GetReceiveQueryString(_connectionInfo.Connection, _connectionInfo.Data, "webSockets");
-            var builder = new UriBuilder(url);
+            var qs = TransportHelper.GetReceiveQueryString(_connectionInfo.Connection, _connectionInfo.Data, "webSockets");
+			qs += "&tid=" + new Random((int)DateTime.Now.Ticks).Next();
+			var builder = new UriBuilder(url);
             builder.Scheme = builder.Scheme == "https" ? "wss" : "ws";
 
-            _connectionInfo.Connection.Trace(TraceLevels.Events, "WS Connecting to: {0}", builder.Uri);
+            _connectionInfo.Connection.Trace(TraceLevels.Events, "WS Connecting to: {0}", builder.Uri+qs);
 
             // TODO: Revisit thread safety of this assignment
             _webSocketTokenSource = new CancellationTokenSource();
@@ -109,7 +110,7 @@ namespace Microsoft.AspNet.SignalR.Client.Transports
             CancellationTokenSource linkedCts = CancellationTokenSource.CreateLinkedTokenSource(_webSocketTokenSource.Token, _disconnectToken);
             CancellationToken token = linkedCts.Token;
 
-            _webSocket = new ClientWebSocket(builder.Uri.ToString(), token, null);
+            _webSocket = new ClientWebSocket(builder.Uri.ToString()+qs, token, null);
 
             _webSocket.Log = new Logger(LogLevel.Trace, null, ((data, s) => _connectionInfo.Connection.Trace(TraceLevels.All, "WebSocket - {0}", data.Message)));
             _webSocket.OnOpen += (sender, args) => _connectionInfo.Connection.ChangeState(_connectionInfo.Connection.State, ConnectionState.Connected);
@@ -139,7 +140,7 @@ namespace Microsoft.AspNet.SignalR.Client.Transports
                 return TaskAsyncHelper.FromError(ex);
             }
 
-            return SendAsync(data);
+            return SendAsync(connection,data);
         }
 
         public override void OnMessage(string message) {

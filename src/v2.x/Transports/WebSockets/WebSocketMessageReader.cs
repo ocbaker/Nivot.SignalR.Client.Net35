@@ -41,7 +41,7 @@ namespace Microsoft.AspNet.SignalR.Client.Transports.WebSockets
         public static async Task<WebSocketMessage> ReadMessageAsync(WebSocket webSocket, int bufferSize,
             int? maxMessageSize, CancellationToken disconnectToken) {
             WebSocketReceiveResult receiveResult = await WSRecieveAsync(webSocket, disconnectToken).ConfigureAwait(false);
-            if(receiveResult.MessageType == WebSocketMessageType.Close)
+            if(receiveResult == null || receiveResult.MessageType == WebSocketMessageType.Close)
                 return WebSocketMessage.CloseMessage;
             return new WebSocketMessage(receiveResult.Message, receiveResult.MessageType);
         }

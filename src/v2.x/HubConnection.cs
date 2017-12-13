@@ -207,18 +207,26 @@ namespace Microsoft.AspNet.SignalR.Client
 
         private void ClearInvocationCallbacks(string error)
         {
-            var result = new HubResult();
-            result.Error = error;
+			Action<HubResult>[] callbacks;
 
-            lock (_callbacks)
-            {
-                foreach (var callback in _callbacks.Values)
-                {
-                    callback(result);
-                }
+			lock (_callbacks)
+			{
+				callbacks = _callbacks.Values.ToArray();
+				_callbacks.Clear();
+			}
 
-                _callbacks.Clear();
-            }
-        }
+			foreach (var callback in callbacks)
+			{
+				// Create a new HubResult each time as it's mutable and we don't want callbacks
+				// changing it during their parallel invocation
+				Task.Factory.StartNew(() => callback(new HubResult { Error = error }))
+					.Catch();
+			}
+		}
+
+		public void Force()
+		{
+			ClearInvocationCallbacks("Force");
+		}
     }
 }
