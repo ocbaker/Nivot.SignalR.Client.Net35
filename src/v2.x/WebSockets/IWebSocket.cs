@@ -23,9 +23,10 @@ namespace Microsoft.AspNet.SignalR.Client.WebSockets
         /// <summary>
         /// Sends data over the websocket.
         /// </summary>
+		/// <param name="connection"></param>
         /// <param name="value">The value to send.</param>
         /// <returns>A <see cref="Task"/> that represents the send is complete.</returns>
-        Task Send(string value);
+        Task Send(IConnection connection, string value);
 
         /// <summary>
         /// Sends a chunk of data over the websocket ("endOfMessage" flag set to false.)

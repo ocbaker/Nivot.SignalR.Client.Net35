@@ -140,7 +140,7 @@ namespace Microsoft.AspNet.SignalR.Client.Transports
                 return TaskAsyncHelper.FromError(ex);
             }
 
-            return SendAsync(data);
+            return SendAsync(connection,data);
         }
 
         public override void OnMessage(string message) {

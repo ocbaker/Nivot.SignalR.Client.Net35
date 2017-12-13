@@ -4,6 +4,7 @@ namespace Microsoft.AspNet.SignalR.Client.Hubs
 {
     public class HubRegistrationData
     {
-        public string Name { get; set; }
+		[Newtonsoft.Json.JsonProperty(PropertyName = "name")]
+		public string Name { get; set; }
     }
 }

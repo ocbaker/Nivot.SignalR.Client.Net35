@@ -52,16 +52,16 @@ namespace Microsoft.AspNet.SignalR.Client.WebSockets
             set;
         }
 
-        Task IWebSocket.Send(string value) {
-            return Send(value);
+        Task IWebSocket.Send(IConnection connection, string value) {
+            return Send(connection, value);
         }
 
-        public override Task Send(string message) {
+        public override Task Send(IConnection connection ,string message) {
             if (_closed) {
                 return TaskAsyncHelper.Empty;
             }
 
-            return base.Send(message);
+            return base.Send(connection,message);
         }
 
         public override Task CloseAsync() {
